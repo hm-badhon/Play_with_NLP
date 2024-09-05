@@ -173,3 +173,82 @@ The Bag of Words (BoW) model is a text preprocessing technique used in Natural L
         [1 1 1 ... 0 0 0]
         [1 1 0 ... 0 0 0]]
     ```
+
+
+
+## Limitations of the Bag of Words (BoW) model's with examples:
+
+### 1. **Ignoring Word Order**:
+- In BoW, the order of words is not considered, which can lead to a loss of context. For example, consider two sentences:
+
+    - **Sentence 1**: "The dog bit the man."
+    - **Sentence 2**: "The man bit the dog."
+
+    In the BoW model, both sentences would produce the same word vector because they contain the same words, even though the meaning is completely different. BoW simply counts word occurrences, ignoring the sequence. This limitation makes it ineffective for tasks that depend on word order, such as sentiment analysis or text understanding.
+
+    #### For example, the BoW vector for both sentences might look like this (assuming a vocabulary of 5 unique words):
+
+    | Word     | The | dog | bit | man | the |
+    |----------|-----|-----|-----|-----|-----|
+    | Sentence 1 | 1   | 1   | 1   | 1   | 1   |
+    | Sentence 2 | 1   | 1   | 1   | 1   | 1   |
+
+    Even though the sentences mean different things, the vectors are identical, causing BoW to lose crucial contextual meaning.
+
+### 2. **Sparsity**:
+BoW generates large, sparse vectors, especially when working with large vocabularies. For example, if you have a corpus with 10,000 unique words and a document that uses only 50 of them, the resulting vector would contain 9,950 zero values and only 50 non-zero values.
+
+- Let’s consider these three short documents:
+
+    - **Document 1**: "I love programming."
+    - **Document 2**: "Programming is fun."
+    - **Document 3**: "I enjoy machine learning."
+
+    Assume the corpus has a vocabulary of 7 words: ["I", "love", "programming", "is", "fun", "enjoy", "machine", "learning"]. Each document will be represented by an 8-dimensional vector, but most elements will be zero:
+
+    | Word           | I  | love | programming | is | fun | enjoy | machine | learning |
+    |----------------|----|------|-------------|----|-----|-------|---------|----------|
+    | **Document 1** | 1  | 1    | 1           | 0  | 0   | 0     | 0       | 0        |
+    | **Document 2** | 0  | 0    | 1           | 1  | 1   | 0     | 0       | 0        |
+    | **Document 3** | 1  | 0    | 0           | 0  | 0   | 1     | 1       | 1        |
+
+    As shown, the vectors are sparse, with many zeros, especially in large datasets. 
+    #### This makes the model computationally inefficient and requires more memory to store these vectors.
+
+
+## 1.3. Term frequency-inverse document frequency (TF-IDF)
+
+### Term Frequency-Inverse Document Frequency (TF-IDF) is a statistic used to evaluate the importance of a word in a document relative to a collection of documents (corpus). 
+### It consists of two components:
+
+- **Term Frequency (TF)**: Measures how often a term appears in a document.
+- **Inverse Document Frequency (IDF)**: Measures the importance of a term across the entire corpus, with less common terms receiving higher weights.
+
+    The TF-IDF score is calculated by multiplying TF and IDF, where a higher score indicates greater importance of a word in a document compared to the entire corpus. TF-IDF is commonly used in text mining, information retrieval, and document clustering.
+
+    To implement TF-IDF in Python, the `TfidfVectorizer` from the scikit-learn library can transform sample documents into a TF-IDF matrix, helping identify significant words for text analysis tasks.
+
+
+    ```python
+        from sklearn.feature_extraction.text import TfidfVectorizer
+        documents = [
+            "The quick brown fox jumps over the lazy dog.",
+            "A journey of a thousand miles begins with a single step.",
+        ]
+
+        vectorizer = TfidfVectorizer() # Create the TF-IDF vectorizer
+        tfidf_matrix = vectorizer.fit_transform(documents)
+        feature_names = vectorizer.get_feature_names_out()
+        tfidf_values = {}
+
+        for doc_index, doc in enumerate(documents):
+            feature_index = tfidf_matrix[doc_index, :].nonzero()[1]
+            tfidf_doc_values = zip(feature_index, [tfidf_matrix[doc_index, x] for x in feature_index])
+            tfidf_values[doc_index] = {feature_names[i]: value for i, value in tfidf_doc_values}
+        #let's print
+        for doc_index, values in tfidf_values.items():
+            print(f"Document {doc_index + 1}:")
+            for word, tfidf_value in values.items():
+                print(f"{word}: {tfidf_value}")
+            print("\n")
+    ```
