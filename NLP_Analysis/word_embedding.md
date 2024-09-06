@@ -252,3 +252,12 @@ BoW generates large, sparse vectors, especially when working with large vocabula
                 print(f"{word}: {tfidf_value}")
             print("\n")
     ```
+ ## Limitations of TF-IDF:
+
+1. **Lack of Semantic Understanding**: TF-IDF treats words independently and doesn't account for synonyms or contextual meaning.
+  
+2. **Sensitivity to Document Length**: Longer documents tend to have higher term frequencies, which can bias TF-IDF scores.
+
+3. **Inability to Capture Word Order**: TF-IDF ignores word order and syntactic structure, missing complex language patterns.
+
+4. **Static Weights**: TF-IDF weights do not adapt or evolve as new documents are added to the corpus.
