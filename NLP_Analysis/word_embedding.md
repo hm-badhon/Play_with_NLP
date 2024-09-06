@@ -261,3 +261,25 @@ BoW generates large, sparse vectors, especially when working with large vocabula
 3. **Inability to Capture Word Order**: TF-IDF ignores word order and syntactic structure, missing complex language patterns.
 
 4. **Static Weights**: TF-IDF weights do not adapt or evolve as new documents are added to the corpus.
+
+
+1. **Lack of Semantic Understanding**:
+   - **Example**: In two documents:
+     - Document 1: "I want to **buy** a new car."
+     - Document 2: "I plan to **purchase** a new vehicle."
+   - TF-IDF treats "**buy**" and "**purchase**" as different words, even though they have the same meaning. As a result, it misses the semantic similarity between the two documents.
+
+2. **Sensitivity to Document Length**:
+   - **Example**:
+     - Document 1: "Python is a programming language."
+     - Document 2: "Python is a widely used high-level programming language created by Guido van Rossum in 1991. Python emphasizes readability, with its use of significant indentation."
+   - Document 2 is longer and will likely have higher term frequencies, causing TF-IDF to give more weight to terms in the longer document, even if Document 1 is just as relevant.
+
+3. **Inability to Capture Word Order**:
+   - **Example**:
+     - Document 1: "The cat chased the dog."
+     - Document 2: "The dog chased the cat."
+   - TF-IDF assigns the same weights to both documents because it doesn’t capture word order, even though their meanings are opposite.
+
+4. **Static Weights**:
+   - **Example**: If you compute TF-IDF for a set of documents and later add more documents, the term weights remain unchanged unless recalculated for the entire corpus. This makes TF-IDF less dynamic for continuously growing datasets.
