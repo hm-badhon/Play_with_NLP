@@ -283,3 +283,6 @@ BoW generates large, sparse vectors, especially when working with large vocabula
 
 4. **Static Weights**:
    - **Example**: If you compute TF-IDF for a set of documents and later add more documents, the term weights remain unchanged unless recalculated for the entire corpus. This makes TF-IDF less dynamic for continuously growing datasets.
+
+
+
