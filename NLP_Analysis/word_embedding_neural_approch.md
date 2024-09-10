@@ -25,27 +25,174 @@ This document provides an overview and analysis of various neural word embedding
 Word2Vec is a neural network-based model that transforms words into continuous vector spaces. Developed by a team at Google, this model captures semantic relationships between words, making it a powerful tool in NLP tasks. Word2Vec operates using two main architectures: Continuous Bag of Words (CBOW) and Skip-Gram.
 
 ### 1.2. Continuous Bag of Words (CBOW)
-CBOW is designed to predict a target word based on its surrounding context words. It uses a feedforward neural network with a single hidden layer. The CBOW model is efficient and works well in capturing syntactic relationships within the text.
+The Continuous Bag of Words (CBOW) is a natural language processing technique used to create word embeddings, which represent the semantic and syntactic relationships between words. It is a neural network-based algorithm that predicts a target word based on its surrounding context words. CBOW is unsupervised, meaning it learns from unlabeled data, and is often used to pre-train word embeddings for NLP tasks like sentiment analysis, text classification, and machine translation.
 
 **Key Points:**
 - CBOW predicts the target word using context words.
 - It uses a single hidden layer neural network.
 - Efficient in capturing syntactic relationships.
 
+### Architecture of the CBOW model
+
+The CBOW model uses the target word around the context word in order to predict it. 
+
+Consider the above example “She is a great dancer.” The CBOW model converts this phrase into pairs of context words and target words. The word pairings would appear like this ([she, a], is), ([is, great], a) ([a, dancer], great) having window size=2. 
+
+![alt text](image.png)
+
+
+In CBOW, the model uses context words to predict a target word. If there are four context words, their 1×W input vectors are passed to the input layer. These vectors are multiplied by a W×N matrix in the hidden layer, producing a 1×N output. The outputs are then element-wise summed in the sum layer, followed by an activation function, resulting in the final output from the output layer.
+
+'''
+```python
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Embedding, Lambda
+from tensorflow.keras.preprocessing.text import Tokenizer
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.decomposition import PCA
+
+# Define the corpus
+corpus = ['The cat sat on the mat',
+          'The dog ran in the park',
+          'The bird sang in the tree']
+tokenizer = Tokenizer()
+tokenizer.fit_on_texts(corpus)
+sequences = tokenizer.texts_to_sequences(corpus)
+print("After converting our words in the corpus \
+into vector of integers:")
+print(sequences)
+
+#Now, we will build the CBOW model having window size = 2.
+
+# Define the parameters
+vocab_size = len(tokenizer.word_index) + 1
+embedding_size = 10
+window_size = 2
+
+# Generate the context-target pairs
+contexts = []
+targets = []
+for sequence in sequences:
+	for i in range(window_size, len(sequence) - window_size):
+		context = sequence[i - window_size:i] +\
+			sequence[i + 1:i + window_size + 1]
+		target = sequence[i]
+		contexts.append(context)
+		targets.append(target)
+
+# Convert the contexts and targets to numpy arrays
+X = np.array(contexts)
+
+# Define the CBOW model
+model = Sequential()
+model.add(Embedding(input_dim=vocab_size,
+					output_dim=embedding_size,
+					input_length=2*window_size))
+model.add(Lambda(lambda x: tf.reduce_mean(x, axis=1)))
+model.add(Dense(units=vocab_size, activation='softmax'))
+model.save_weights('cbow_weights.h5')
+
+
+# Load the pre-trained weights
+model.load_weights('cbow_weights.h5')
+# Get the word embeddings
+embeddings = model.get_weights()[0]
+
+# Perform PCA to reduce the dimensionality
+# of the embeddings
+pca = PCA(n_components=2)
+reduced_embeddings = pca.fit_transform(embeddings)
+
+# Visualize the embeddings
+plt.figure(figsize=(5, 5))
+for i, word in enumerate(tokenizer.word_index.keys()):
+	x, y = reduced_embeddings[i]
+	plt.scatter(x, y)
+	plt.annotate(word, xy=(x, y), xytext=(5, 2),
+				textcoords='offset points',
+				ha='right', va='bottom')
+plt.show()
+
+
+```
+
+
 **Example Code:**
 ```python
-# Sample CBOW model in PyTorch
 import torch
 import torch.nn as nn
 import torch.optim as optim
 
 # Define CBOW model
 class CBOWModel(nn.Module):
-    def __init__(self, vocal_size , embed_size):
-        super(CBOModel,self).__init__()
-        self.embedding = nn.Embedding
+	def __init__(self, vocab_size, embed_size):
+		super(CBOWModel, self).__init__()
+		self.embeddings = nn.Embedding(vocab_size, embed_size)
+		self.linear = nn.Linear(embed_size, vocab_size)
 
+	def forward(self, context):
+		context_embeds = self.embeddings(context).sum(dim=1)
+		output = self.linear(context_embeds)
+		return output
 
+context_size = 2
+raw_text = "word embeddings are awesome"
+tokens = raw_text.split()
+print('tokens',tokens)
+vocab = set(tokens)
+print('vocab', vocab)
+word_to_index = {word: i for i, word in enumerate(vocab)}
+print('word_to_index', word_to_index)
+
+data =['my name is badhon']
+print("Token:", tokens)
+
+for i in range(2, len(tokens)-2):
+    print('i',i)
+    context = [word_to_index[word] for word in tokens[i - 2:i] + tokens[i + 1:i +3]]
+    print('context------', context)
+    target = word_to_index[tokens[i]]
+    print('target-------', target)
+    data.append((torch.tensor(context), torch.tensor(target)))
+    print('data', data)
+    
+    
+# Hyperparameters
+vocab_size = len(vocab)
+embed_size = 10
+learning_rate = 0.01
+epochs = 100
+
+# Initialize CBOW model
+cbow_model = CBOWModel(vocab_size, embed_size)
+criterion = nn.CrossEntropyLoss()
+optimizer = optim.SGD(cbow_model.parameters(), lr=learning_rate)
+
+# Training loop
+for epoch in range(epochs):
+    total_loss = 0
+#     print("#####Data:", data)
+
+    for context, target in data:
+        print('context', context)
+        print('target',target)
+        print('data', data)
+        optimizer.zero_grad()
+        output = cbow_model(context)
+        loss = criterion(output.unsqueeze(0), target.unsqueeze(0))
+        loss.backward()
+        optimizer.step()
+        total_loss += loss.item()
+    print(f"Epoch {epoch + 1}, Loss: {total_loss}")
+
+# Example usage: Get embedding for a specific word
+word_to_lookup = "embeddings"
+word_index = word_to_index[word_to_lookup]
+embedding = cbow_model.embeddings(torch.tensor([word_index]))
+print(f"Embedding for '{word_to_lookup}': {embedding.detach().numpy()}")
 
 ```
 
