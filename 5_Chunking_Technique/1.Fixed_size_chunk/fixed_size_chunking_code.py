@@ -1,13 +1,14 @@
 
 def fixed_size_chuning(text, chunk_size, overlap):
     words = text.split()
+    print('chunk_size',chunk_size)
+    print('overlap', overlap)
     chunks = []
 
     for i in range(0, len(words), chunk_size - overlap):
-        print('chunk_size',chunk_size)
-        print('overlap', overlap)
+        # print('i----->',i)
         chunk = words[i:i + chunk_size]
-        print(chunk)
+        # print(chunk)
         chunks.append(" ".join(chunk))
     return chunks
 

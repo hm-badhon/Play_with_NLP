@@ -2,6 +2,8 @@
 
 
 ### **Explanation:**
+
+![alt text](image.png)
 1. **Splitting Words:** The text is split into words to ensure even segmentation.
 2. **Chunking with Overlap:** Each chunk contains a fixed number of words (`chunk_size`). The overlap (`overlap`) ensures continuity between consecutive chunks.
 3. **Issue:** Even with overlap, some sentences get broken, leading to potential loss of meaning.
