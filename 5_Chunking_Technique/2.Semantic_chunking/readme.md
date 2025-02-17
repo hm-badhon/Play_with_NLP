@@ -1,6 +1,6 @@
 
 
-### **📝 Simple Semantic Chunking Without Embeddings**
+### **📝 Simple Semantic Chunking**
 ![alt text](image.png)
 ---
 
