@@ -29,4 +29,3 @@ Chunk 7: does not completely prevent semantic disruptions.
 - **Sentence-aware chunking:** Using NLP libraries like `nltk` or `spaCy` to split text by sentences instead of fixed-size chunks.
 - **Semantic-aware chunking:** Using embeddings (e.g., `BERT`, `GPT`) to split based on meaning rather than word count.
 
-Let me know if you need improvements or another approach! 🚀
