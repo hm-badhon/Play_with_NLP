@@ -1,0 +1,2 @@
+model_checkpoint_path: "bnen_weights"
+all_model_checkpoint_paths: "bnen_weights"
