@@ -6,6 +6,7 @@ nlp = spacy.load("en_core_web_sm")
 def simple_semantic_chunking(text, max_sentences):
     """Splits text into chunks of at most 'max_sentences' sentences."""
     doc = nlp(text)
+    print('doc setence:', doc.sents)
     sentences = [sent.text for sent in doc.sents]
 
     chunks = []
