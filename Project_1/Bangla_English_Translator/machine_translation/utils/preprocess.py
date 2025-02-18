@@ -1,44 +1,33 @@
-import tensorflow as tf
-import unicodedata
-import re
 import pandas as pd
-import numpy as np
-from tensorflow.keras.preprocessing.text import Tokenizer
-from tensorflow.keras.preprocessing.sequence import pad_sequences
-from sklearn.model_selection import train_test_split
+import tensorflow as tf
+import re
+import os
 
-# Function to normalize text (removes unwanted spaces, unicode normalization)
-def normalize_text(text):
-    text = unicodedata.normalize("NFKC", text)
-    text = re.sub(r"[^a-zA-Zঅ-হ]", " ", text)
-    text = re.sub(r"\s+", " ", text).strip()
+def clean_text(text):
+    """Remove unwanted characters and lower the text."""
+    text = text.lower().strip()
+    text = re.sub(r"[^a-zA-Zঅ-হ0-9।?!]", " ", text)  # Remove special characters except punctuation
+    text = re.sub(r"\s+", " ", text)  # Remove extra spaces
     return text
 
-# Function to load dataset
-def load_dataset(file_path):
-    data = pd.read_csv(file_path, delimiter="\t", header=None, names=["English", "Bengali", "Meta"])
-    data = data.drop(columns=["Meta"])  # Drop attribution metadata
+def load_and_preprocess_data(filepath):
+    """Load dataset, clean it, and tokenize."""
+    with open(filepath, "r", encoding="utf-8") as f:
+        lines = f.readlines()
 
-    data["English"] = data["English"].apply(lambda x: "<sos> " + normalize_text(x.lower()) + " <eos>")
-    data["Bengali"] = data["Bengali"].apply(lambda x: "<sos> " + normalize_text(x) + " <eos>")
+    english_sentences, bangla_sentences = [], []
 
-    return data["English"].tolist(), data["Bengali"].tolist()
+    for line in lines:
+        parts = line.strip().split("\t")
+        if len(parts) >= 2:
+            english_sentences.append(clean_text(parts[0]))
+            bangla_sentences.append(clean_text(parts[1]))
 
-# Tokenization function
-def tokenize(sentences):
-    tokenizer = Tokenizer(filters='')
-    tokenizer.fit_on_texts(sentences)
-    sequences = tokenizer.texts_to_sequences(sentences)
-    return sequences, tokenizer
+    df = pd.DataFrame({"English": english_sentences, "Bangla": bangla_sentences})
+    df.to_csv("/media/hmb/hdd2/Ongoing_Projects/NLP/Play_with_NLP/Project_1/Bangla_English_Translator/machine_translation/data/dataset.csv", index=False, encoding="utf-8")
 
-# Convert text into padded sequences
-def preprocess_data(file_path, max_length=20):
-    en_texts, bn_texts = load_dataset(file_path)
+    return df
 
-    en_seq, en_tokenizer = tokenize(en_texts)
-    bn_seq, bn_tokenizer = tokenize(bn_texts)
-
-    en_seq = pad_sequences(en_seq, maxlen=max_length, padding="post")
-    bn_seq = pad_sequences(bn_seq, maxlen=max_length, padding="post")
-
-    return en_seq, bn_seq, en_tokenizer, bn_tokenizer
+if __name__ == "__main__":
+    df = load_and_preprocess_data("/media/hmb/hdd2/Ongoing_Projects/NLP/Play_with_NLP/Project_1/Bangla_English_Translator/machine_translation/data/dataset.txt")
+    print(df.head())
