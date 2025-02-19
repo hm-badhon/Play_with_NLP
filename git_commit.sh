@@ -4,4 +4,4 @@ git commit -m "updated file...."
 git push origin main
 
 
-# git pull
+# git pull origin main
