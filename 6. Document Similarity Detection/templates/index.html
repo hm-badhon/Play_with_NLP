@@ -1,0 +1,50 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Similarity Checker</title>
+</head>
+<body>
+    <h1>Document Similarity Checker</h1>
+    <form method="POST" action="/check_similarity">
+        <label for="doc1">Document 1:</label><br>
+        <textarea id="doc1" name="doc1" rows="4" cols="50" required></textarea><br><br>
+        
+        <label for="doc2">Document 2:</label><br>
+        <textarea id="doc2" name="doc2" rows="4" cols="50" required></textarea><br><br>
+        
+        <button type="submit">Check Similarity</button>
+    </form>
+
+    <h2>Similarity Results</h2>
+    <div id="result"></div>
+
+    <script>
+        const form = document.querySelector('form');
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            const doc1 = document.getElementById('doc1').value;
+            const doc2 = document.getElementById('doc2').value;
+
+            const response = await fetch('/check_similarity', {
+                method: 'POST',
+                body: new URLSearchParams({ doc1, doc2 }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                }
+            });
+
+            const data = await response.json();
+            const result = `
+                <p><strong>TF-IDF Similarity:</strong> ${data['TF-IDF Similarity']}</p>
+                <p><strong>Word2Vec Similarity:</strong> ${data['Word2Vec Similarity']}</p>
+                <p><strong>BERT Similarity:</strong> ${data['BERT Similarity']}</p>
+            `;
+            document.getElementById('result').innerHTML = result;
+        });
+    </script>
+</body>
+</html>
