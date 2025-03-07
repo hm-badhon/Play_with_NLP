@@ -326,3 +326,117 @@ BERT Cosine Similarity:
 - **TF-IDF** focuses on the importance of unique terms in the documents and calculates similarity based on that.
 - **Word2Vec** captures semantic meaning through word embeddings, so it's better at capturing the relationship between words.
 - **BERT** understands the entire context of the sentences, giving the highest similarity score due to its ability to process contextual information.
+
+
+
+**30 most commonly asked interview questions**
+
+
+### **General Project Questions**
+1. **What is document similarity detection?**  
+   - It measures how similar two or more text documents are based on their content.
+
+2. **What are some real-world applications of document similarity detection?**  
+   - Plagiarism detection, news deduplication, search engines, recommendation systems, and legal text comparison.
+
+3. **Which techniques did you use for document similarity?**  
+   - TF-IDF, Word2Vec, and BERT-based embeddings with cosine similarity.
+
+4. **Why did you use cosine similarity?**  
+   - It measures the angle between two document vectors, making it effective for text comparison regardless of length.
+
+5. **What are the limitations of cosine similarity?**  
+   - It only considers direction, not magnitude, and may not work well if words have different meanings in different contexts.
+
+---
+
+### **TF-IDF Related Questions**
+6. **What is TF-IDF, and why is it used?**  
+   - TF-IDF (Term Frequency-Inverse Document Frequency) assigns weights to words based on importance, reducing the impact of common words.
+
+7. **How does TF-IDF handle stop words?**  
+   - Since stop words appear frequently in all documents, their **IDF score is low**, making their impact minimal.
+
+8. **What are the drawbacks of using TF-IDF?**  
+   - It ignores word order, does not capture semantics, and struggles with synonyms.
+
+9. **Can TF-IDF work for short texts?**  
+   - It performs poorly for short texts since it relies on term frequency, which may not be meaningful in small datasets.
+
+10. **How do you improve TF-IDF results?**  
+   - Use **bigram/trigram models**, **stemming/lemmatization**, and **custom stop-word removal**.
+
+---
+
+### **Word2Vec Related Questions**
+11. **What is Word2Vec?**  
+   - A neural network model that generates word embeddings by learning word associations.
+
+12. **Which types of Word2Vec models exist?**  
+   - **CBOW (Continuous Bag of Words)** and **Skip-gram**.
+
+13. **Why did you use Word2Vec instead of TF-IDF?**  
+   - Word2Vec captures **semantic meaning** and **context**, unlike TF-IDF.
+
+14. **How do Word2Vec embeddings help in similarity detection?**  
+   - They convert words into dense vectors where similar words have closer distances.
+
+15. **What is the biggest limitation of Word2Vec?**  
+   - It does not handle out-of-vocabulary (OOV) words well and ignores sentence structure.
+
+---
+
+### **BERT Related Questions**
+16. **Why did you use BERT for document similarity?**  
+   - BERT understands **context** and **word relationships** through bidirectional attention.
+
+17. **How does BERT differ from Word2Vec?**  
+   - BERT considers **entire sentence context**, while Word2Vec is **word-centric**.
+
+18. **What challenges did you face while using BERT?**  
+   - High computational cost, longer inference time, and requirement of **fine-tuning** for specific tasks.
+
+19. **How does BERT handle synonyms compared to TF-IDF?**  
+   - BERT understands synonyms better since it considers **word meaning in context**.
+
+20. **How do you speed up BERT inference in production?**  
+   - Use **DistilBERT**, **quantization**, and **sentence embedding caching**.
+
+---
+
+### **Performance & Optimization Questions**
+21. **How do you evaluate the accuracy of document similarity models?**  
+   - Using **precision, recall, F1-score**, and comparing similarity scores against ground truth labels.
+
+22. **How do you optimize document similarity for large datasets?**  
+   - Use **vector indexing (FAISS, Annoy)** and **clustering (KMeans, LSH)** for efficient search.
+
+23. **How do you handle large documents efficiently?**  
+   - Use **sentence chunking** and **hierarchical embeddings**.
+
+24. **Which method performs best in real-world applications?**  
+   - **TF-IDF** for keyword-based retrieval, **Word2Vec** for general semantic similarity, and **BERT** for deep context understanding.
+
+25. **How do you handle multilingual document similarity?**  
+   - Use **Multilingual BERT (mBERT)** or **LASER embeddings**.
+
+---
+
+### **Deployment & Practical Use Cases**
+26. **How did you deploy your document similarity system?**  
+   - Using **Flask API** with **Render** for free cloud deployment.
+
+27. **How do you integrate document similarity in a real-world application?**  
+   - Through APIs that return similarity scores, used in **search engines, chatbots, and recommendations**.
+
+28. **How do you handle dynamic document updates in a deployed model?**  
+   - Re-train embeddings periodically and use **real-time vector storage** like FAISS.
+
+29. **How do you deal with bias in similarity detection?**  
+   - Use **balanced datasets** and **fine-tune embeddings** to reduce dataset bias.
+
+30. **How would you improve this project further?**  
+   - Implement **cross-encoder BERT**, **knowledge graph embeddings**, and **hybrid similarity techniques**.
+
+---
+
