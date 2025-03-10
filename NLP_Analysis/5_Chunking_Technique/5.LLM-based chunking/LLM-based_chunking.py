@@ -1,38 +1,42 @@
-import openai
-import tiktoken
+import nltk
+import re
+from nltk.tokenize import sent_tokenize
+from transformers import pipeline
 
-openai.api_key = "your_openai_api_key"  # Replace with your actual API key
+nltk.download('punkt')
 
-def count_tokens(text, model="gpt-3.5-turbo"):
-    """Counts the number of tokens in a given text."""
-    encoding = tiktoken.encoding_for_model(model)
-    return len(encoding.encode(text))
+def count_tokens(text):
+    """Counts the number of words in a given text."""
+    return len(text.split())
 
-def llm_based_chunking(text, max_tokens=1000):
-    """Uses GPT to intelligently chunk text while preserving meaning."""
+def mistral_based_chunking(text, max_tokens=100):
+    """Uses Mistral model to intelligently chunk text while preserving context."""
+    summarizer = pipeline("text-generation", model="mistralai/Mistral-7B-Instruct")
     
-    # If the text is already within token limits, return it as a single chunk
-    if count_tokens(text) <= max_tokens:
-        return [text]
-
-    prompt = f"""
-    Your task is to split the following text into meaningful chunks while preserving context.
-    Each chunk should not exceed {max_tokens} tokens.
-
-    Text:
-    {text}
-
-    Return a JSON array of text chunks.
-    """
-
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  # Use gpt-3.5-turbo or gpt-4
-        messages=[{"role": "system", "content": prompt}],
-        temperature=0.5
-    )
-
-    chunks = response["choices"][0]["message"]["content"]
-    return eval(chunks)  # Convert JSON output to Python list
+    sentences = sent_tokenize(text)
+    chunks = []
+    current_chunk = []
+    current_length = 0
+    
+    for sentence in sentences:
+        sentence_length = count_tokens(sentence)
+        
+        if current_length + sentence_length > max_tokens:
+            chunk_text = " ".join(current_chunk)
+            summary = summarizer(chunk_text, max_length=max_tokens, do_sample=False)[0]['generated_text']
+            chunks.append(summary)
+            current_chunk = [sentence]
+            current_length = sentence_length
+        else:
+            current_chunk.append(sentence)
+            current_length += sentence_length
+    
+    if current_chunk:
+        chunk_text = " ".join(current_chunk)
+        summary = summarizer(chunk_text, max_length=max_tokens, do_sample=False)[0]['generated_text']
+        chunks.append(summary)
+    
+    return chunks
 
 # Example Long Text
 document_text = """
@@ -47,8 +51,8 @@ Self-driving cars rely on AI for real-time decision-making, while chatbots enhan
 Despite its benefits, AI raises ethical concerns. Issues such as bias, privacy, and automation-driven job losses must be addressed.
 """
 
-# Apply LLM-Based Chunking
-chunks = llm_based_chunking(document_text, max_tokens=100)
+# Apply Mistral-Based Chunking
+chunks = mistral_based_chunking(document_text, max_tokens=100)
 
 # Print Results
 for i, chunk in enumerate(chunks):
